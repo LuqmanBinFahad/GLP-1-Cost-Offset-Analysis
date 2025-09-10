@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-World Cost Offset of GLP-1 Agonists in T2DM</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Calm Harmony -->
+    <!-- Application Structure Plan: The application is designed as a top-down narrative to guide a healthcare payer through the study logically. It begins with the high-level conclusion (the "answer"), moves to the study's methodology for credibility, presents the detailed comparative results, and culminates in an interactive budget impact model. This structure was chosen to be decision-oriented, allowing a user to get the key takeaway instantly, then drill down into the evidence and finally apply the findings to their specific population. This is more intuitive for a business audience than following a rigid academic paper structure. -->
+    <!-- Visualization & Content Choices: 
+        - Study Cohort Funnel: Report Info -> Methodology/Patient Selection -> Goal: Organize -> Viz/Presentation: HTML/CSS diagram -> Interaction: None, static for clarity -> Justification: Simplifies complex patient filtering into an easily digestible visual.
+        - Cost & Event Comparison: Report Info -> Primary/Secondary Outcomes -> Goal: Compare -> Viz/Presentation: Bar Charts (Chart.js) -> Interaction: Buttons to switch between charts, tooltips on hover for precise data -> Justification: Bar charts are the most direct way to compare outcomes between two groups. Interactivity allows layering multiple findings without cluttering the UI.
+        - Budget Impact Model: Report Info -> Payer-facing deliverable -> Goal: Explore/Apply -> Viz/Presentation: Interactive Slider & Dynamic Text Readouts -> Interaction: User adjusts slider to change member count, which recalculates and displays cost/event impact in real-time -> Justification: Turns static findings into a practical, personalized tool for payers, directly addressing the study's objective.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc; /* slate-50 */
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 400px;
+            max-height: 50vh;
+        }
+        .nav-link {
+            transition: color 0.3s;
+        }
+        .nav-link.active {
+            color: #2563eb; /* blue-600 */
+            font-weight: 600;
+        }
+        .stat-card {
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+    </style>
+</head>
+<body class="text-slate-800">
+
+    <header class="bg-white/80 backdrop-blur-lg sticky top-0 z-50 border-b border-slate-200">
+        <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex-shrink-0">
+                    <h1 class="text-lg font-bold text-slate-900">GLP-1 Cost Analysis</h1>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="#overview" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-slate-600 hover:text-blue-600">Overview</a>
+                        <a href="#findings" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-slate-600 hover:text-blue-600">Key Findings</a>
+                        <a href="#impact" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-slate-600 hover:text-blue-600">Budget Impact</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section id="hero" class="py-16 md:py-24 bg-white">
+            <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <h1 class="text-3xl md:text-5xl font-extrabold tracking-tight text-slate-900">Cost Offset Analysis of GLP-1 Agonists in Type 2 Diabetes: A Retrospective Claims Study and Budget Impact Model</h1>
+                <p class="mt-2 text-lg md:text-xl font-medium text-slate-700">Authored by Dr. Luqman Bin Fahad</p>
+                <p class="mt-4 text-lg md:text-xl text-slate-600">An analysis of the 12-month downstream medical cost impact of GLP-1 agonists versus DPP-4 inhibitors for adults with T2DM and obesity.</p>
+                <div class="mt-8 p-6 bg-blue-50 border border-blue-200 rounded-lg inline-block">
+                    <p class="text-xl font-bold text-blue-800">Key Takeaway: Over 12 months, GLP-1 agonist use was associated with an average <span class="text-green-600">reduction of $2,150 in total medical costs</span> per patient compared to DPP-4 inhibitors.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="overview" class="py-16 md:py-20">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center">
+                    <h2 class="text-3xl font-bold tracking-tight text-slate-900">Study Overview & Methodology</h2>
+                    <p class="mt-4 max-w-2xl mx-auto text-lg text-slate-600">This section outlines the retrospective cohort study design. We analyzed claims data to create a robust, real-world comparison between two major drug classes, ensuring the patient groups were statistically similar before evaluating their outcomes.</p>
+                </div>
+
+                <div class="mt-12 grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 items-center">
+                    <div class="prose prose-lg text-slate-600">
+                        <p>We aimed to answer a critical question: Does the higher upfront pharmacy cost of GLP-1 agonists lead to downstream savings compared to DPP-4 inhibitors?</p>
+                        <ul>
+                            <li><strong>Data Source:</strong> IBM MarketScan® Database (2018-2023)</li>
+                            <li><strong>Population:</strong> Adults with Type-2 Diabetes and obesity (BMI ≥ 30 kg/m²), newly initiated on a GLP-1 agonist or a DPP-4 inhibitor.</li>
+                            <li><strong>Analysis:</strong> We used 1:3 propensity score matching on 76 variables (demographics, comorbidities, prior costs) to minimize bias. The final analysis compared 12-month inflation-adjusted costs and cardiovascular event rates.</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-semibold text-center mb-4 text-slate-900">Cohort Selection Funnel</h3>
+                        <div class="space-y-2">
+                            <div class="bg-white p-4 rounded-lg shadow-md border border-slate-200">
+                                <p class="text-sm font-semibold text-slate-500">IBM MarketScan Database</p>
+                                <p class="text-2xl font-bold text-slate-800">2.8M T2DM Patients</p>
+                            </div>
+                             <div class="flex justify-center"><div class="h-6 w-1 bg-slate-300"></div></div>
+                            <div class="bg-white p-4 rounded-lg shadow-md border border-slate-200">
+                                <p class="text-sm font-semibold text-slate-500">Applied Inclusion/Exclusion Criteria (New User, BMI ≥ 30, No Insulin)</p>
+                                <p class="text-2xl font-bold text-slate-800">210,450 Eligible Patients</p>
+                            </div>
+                             <div class="flex justify-center"><div class="h-6 w-1 bg-slate-300"></div></div>
+                            <div class="bg-white p-4 rounded-lg shadow-md border border-slate-200">
+                                <p class="text-sm font-semibold text-slate-500">After 1:3 Propensity Score Matching on 76 Covariates</p>
+                                <div class="mt-2 flex justify-around">
+                                    <div>
+                                        <p class="text-lg font-bold text-blue-600">7,120</p>
+                                        <p class="text-sm text-slate-500">GLP-1 Users</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-lg font-bold text-teal-600">21,360</p>
+                                        <p class="text-sm text-slate-500">DPP-4 Users</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="findings" class="py-16 md:py-20 bg-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center">
+                    <h2 class="text-3xl font-bold tracking-tight text-slate-900">Key Findings</h2>
+                    <p class="mt-4 max-w-2xl mx-auto text-lg text-slate-600">The analysis revealed significant differences in both total healthcare costs and clinical outcomes over the 12-month follow-up period. Use the buttons below to explore the primary and secondary endpoints.</p>
+                </div>
+
+                <div class="mt-10 text-center">
+                    <div class="inline-flex rounded-md shadow-sm" role="group">
+                        <button type="button" id="btnTotalCosts" class="chart-toggle-btn active-btn px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-blue-600 rounded-l-lg hover:bg-blue-700">
+                            Total Costs
+                        </button>
+                        <button type="button" id="btnDiabetesCosts" class="chart-toggle-btn px-4 py-2 text-sm font-medium text-slate-900 bg-white border-t border-b border-slate-300 hover:bg-slate-100">
+                            Diabetes-Related Costs
+                        </button>
+                        <button type="button" id="btnCvEvents" class="chart-toggle-btn px-4 py-2 text-sm font-medium text-slate-900 bg-white border border-slate-300 rounded-r-lg hover:bg-slate-100">
+                            CV Events
+                        </button>
+                    </div>
+                </div>
+
+                <div class="mt-8">
+                    <div class="chart-container">
+                        <canvas id="findingsChart"></canvas>
+                    </div>
+                </div>
+                 <div class="mt-10 grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+                    <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                        <h4 class="font-semibold text-slate-800">Robustness Check: E-Value</h4>
+                        <p class="text-slate-600 text-sm mt-1">The E-value was 2.5, suggesting that an unmeasured confounding variable would need to have an association of at least 2.5 with both the treatment and the outcome to explain away the observed cost savings.</p>
+                    </div>
+                    <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                        <h4 class="font-semibold text-slate-800">Falsification Endpoint: Hip Fracture</h4>
+                        <p class="text-slate-600 text-sm mt-1">There was no statistically significant difference in the rates of hip fractures between the two groups, increasing confidence that the observed findings are not due to systemic bias.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="impact" class="py-16 md:py-20">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center">
+                    <h2 class="text-3xl font-bold tracking-tight text-slate-900">Payer Budget Impact Model</h2>
+                    <p class="mt-4 max-w-2xl mx-auto text-lg text-slate-600">Translate these research findings into actionable insights for your organization. Adjust the slider to model the potential 12-month financial and clinical impact for a given number of members with T2DM and obesity.</p>
+                </div>
+
+                <div class="mt-12 max-w-3xl mx-auto">
+                    <label for="memberSlider" class="block text-center font-medium text-slate-700">Number of Members: <span id="memberCount" class="font-bold text-blue-600 text-lg">1000</span></label>
+                    <input id="memberSlider" type="range" min="100" max="10000" value="1000" step="100" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer mt-2">
+                </div>
+
+                <div class="mt-10 grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="stat-card bg-white p-8 rounded-xl shadow-lg border border-slate-200 text-center">
+                        <h3 class="text-lg font-semibold text-slate-600">Estimated Annual Cost Impact</h3>
+                        <p class="mt-2 text-4xl md:text-5xl font-extrabold text-green-600" id="costImpactResult">-$2,150,000</p>
+                        <p class="mt-2 text-slate-500">Total net savings by shifting members from DPP-4 inhibitors to GLP-1 agonists.</p>
+                    </div>
+                    <div class="stat-card bg-white p-8 rounded-xl shadow-lg border border-slate-200 text-center">
+                        <h3 class="text-lg font-semibold text-slate-600">Estimated Clinical Impact</h3>
+                        <p class="mt-2 text-4xl md:text-5xl font-extrabold text-blue-600" id="cvImpactResult">-18</p>
+                        <p class="mt-2 text-slate-500">Fewer major adverse cardiovascular events (MACE) over 12 months.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer class="bg-slate-800 text-white mt-16">
+            <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8 text-center">
+                <p class="text-slate-300">This interactive report summarizes a retrospective cohort study.</p>
+                <p class="text-xs text-slate-400 mt-2">The analysis was based on de-identified administrative claims data and does not constitute medical advice. All cost and event data are illustrative based on study findings.</p>
+            </div>
+        </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const chartData = {
+                totalCosts: {
+                    labels: ['DPP-4 Inhibitors', 'GLP-1 Agonists'],
+                    title: 'Average Total 12-Month All-Cause Costs per Patient',
+                    unit: '$',
+                    data: [18650, 16500],
+                    backgroundColor: ['rgba(59, 130, 246, 0.7)', 'rgba(16, 185, 129, 0.7)'],
+                    borderColor: ['rgba(59, 130, 246, 1)', 'rgba(16, 185, 129, 1)'],
+                },
+                diabetesCosts: {
+                    labels: ['DPP-4 Inhibitors', 'GLP-1 Agonists'],
+                    title: 'Average 12-Month Diabetes-Related Costs per Patient',
+                    unit: '$',
+                    data: [9800, 8500],
+                    backgroundColor: ['rgba(59, 130, 246, 0.7)', 'rgba(16, 185, 129, 0.7)'],
+                    borderColor: ['rgba(59, 130, 246, 1)', 'rgba(16, 185, 129, 1)'],
+                },
+                cvEvents: {
+                    labels: ['DPP-4 Inhibitors', 'GLP-1 Agonists'],
+                    title: 'Major Adverse CV Events per 1,000 Patients per Year',
+                    unit: '',
+                    data: [52, 34],
+                    backgroundColor: ['rgba(59, 130, 246, 0.7)', 'rgba(16, 185, 129, 0.7)'],
+                    borderColor: ['rgba(59, 130, 246, 1)', 'rgba(16, 185, 129, 1)'],
+                }
+            };
+
+            const ctx = document.getElementById('findingsChart').getContext('2d');
+            let findingsChart;
+
+            function renderChart(dataKey) {
+                if (findingsChart) {
+                    findingsChart.destroy();
+                }
+                const chartConfig = chartData[dataKey];
+                findingsChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: chartConfig.labels,
+                        datasets: [{
+                            label: chartConfig.title,
+                            data: chartConfig.data,
+                            backgroundColor: chartConfig.backgroundColor,
+                            borderColor: chartConfig.borderColor,
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: chartConfig.title,
+                                font: {
+                                    size: 16
+                                }
+                            },
+                            legend: {
+                                display: false
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        let label = context.dataset.label || '';
+                                        if (label) {
+                                            label += ': ';
+                                        }
+                                        if (context.parsed.y !== null) {
+                                            if (chartConfig.unit === '$') {
+                                                label += new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0 }).format(context.parsed.y);
+                                            } else {
+                                                label += context.parsed.y;
+                                            }
+                                        }
+                                        return label;
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    callback: function(value, index, values) {
+                                        if (chartConfig.unit === '$') {
+                                           return '$' + (value / 1000) + 'k';
+                                        }
+                                        return value;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            renderChart('totalCosts');
+
+            const toggleButtons = document.querySelectorAll('.chart-toggle-btn');
+            toggleButtons.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    toggleButtons.forEach(b => {
+                        b.classList.remove('active-btn', 'bg-blue-600', 'text-white');
+                        b.classList.add('bg-white', 'text-slate-900');
+                    });
+                    this.classList.add('active-btn', 'bg-blue-600', 'text-white');
+                    this.classList.remove('bg-white', 'text-slate-900');
+                    
+                    if (this.id === 'btnTotalCosts') renderChart('totalCosts');
+                    if (this.id === 'btnDiabetesCosts') renderChart('diabetesCosts');
+                    if (this.id === 'btnCvEvents') renderChart('cvEvents');
+                });
+            });
+
+            const memberSlider = document.getElementById('memberSlider');
+            const memberCountEl = document.getElementById('memberCount');
+            const costImpactResultEl = document.getElementById('costImpactResult');
+            const cvImpactResultEl = document.getElementById('cvImpactResult');
+
+            const costDifferencePerPatient = chartData.totalCosts.data[0] - chartData.totalCosts.data[1];
+            const cvDifferencePer1000 = chartData.cvEvents.data[0] - chartData.cvEvents.data[1];
+
+            function updateImpactModel() {
+                const members = parseInt(memberSlider.value);
+                memberCountEl.textContent = members.toLocaleString('en-US');
+
+                const totalCostImpact = members * costDifferencePerPatient;
+                costImpactResultEl.textContent = `-${totalCostImpact.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0 })}`;
+                
+                const totalCvImpact = (members / 1000) * cvDifferencePer1000;
+                cvImpactResultEl.textContent = `-${Math.round(totalCvImpact).toLocaleString('en-US')}`;
+            }
+
+            memberSlider.addEventListener('input', updateImpactModel);
+            updateImpactModel();
+
+            const navLinks = document.querySelectorAll('.nav-link');
+            const sections = document.querySelectorAll('main section[id]');
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        navLinks.forEach(link => {
+                            link.classList.remove('active');
+                            if (link.getAttribute('href').substring(1) === entry.target.id) {
+                                link.classList.add('active');
+                            }
+                        });
+                    }
+                });
+            }, { rootMargin: '-50% 0px -50% 0px' });
+
+            sections.forEach(section => {
+                observer.observe(section);
+            });
+        });
+    </script>
+</body>
+</html>
